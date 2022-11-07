@@ -24,21 +24,20 @@ hold on
 %Define upper border as straight line:
 x1 = linspace(0.55,15,100);
 y1 = 15.*ones(length(x1));
+plot(x1,y1,'g','HandleVisibility','off')
 
 %Define lower border as straight line:
 x2 = linspace(5.9,15,100);
 y2 = 0.*ones(length(x2));
+plot(x2,y2,'g','HandleVisibility','off')
 
 %Define right side boarder as straight line:
 xv = 15.*ones(length(x));
 yv = linspace(0,15,length(xv));
-
-plot(x1,y1,'g','HandleVisibility','off')
-plot(x2,y2,'g','HandleVisibility','off')
 plot(xv,yv,'g','HandleVisibility','off')
 
 
-%% Plot some randomly determined population centers:
+%% Plot some randomly selected population centers:
 popCenters = [4.0783    4.0816;
               1.5899   12.2449;
              11.4516   10.8455;];
