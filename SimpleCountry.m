@@ -7,7 +7,13 @@ clc; clear; close all
 coastCoeff = load("coastPolyCoeffs.mat");
 alphaStar = coastCoeff.alphaStar;
 
+%Some linearly spaced x values
+x = linspace(0.55,5.9625,100);
+
 %The 5th-order polynomial that will define our coast:
+fx = alphaStar(1,:) + alphaStar(2,:).*x + alphaStar(3,:).*x.^2 + alphaStar(4,:).*x.^3 ...
+    + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5;
+
 coast_line = @(x) alphaStar(1,:) + alphaStar(2,:).*x + alphaStar(3,:).*x.^2 + alphaStar(4,:).*x.^3 ...
     + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5;
 
@@ -22,7 +28,7 @@ x_bounds = [0 right_bound];
 x_bounds = max(x_bounds, fsolve((@(x) (coast_line(x) - upper_bound)),0,options));
 x_bounds = min(x_bounds, fsolve((@(x) (coast_line(x) - lower_bound)),0, options));
 
-fplot(coast_line, x_bounds,'g');
+plot(x, fx,'g');
 hold on
 
 %%% Defining the borders of the country (just straight lines)
@@ -46,9 +52,9 @@ plot(xv,yv,'g','HandleVisibility','off')
 %% Plot some randomly selected population centers:
 popCenters = [4.0783    4.0816;
               1.5899   12.2449;
-             11.4516   10.8455;];
-populations = [1000, 500, 800];
-scatter(popCenters(:,1),popCenters(:,2),populations/10,'b*')
+             11.4516   10.8455;
+             14.2416    2.1937;];
+plot(popCenters(:,1),popCenters(:,2),'b*')
 
 %% Add some titles and labels
 legend("Borders","Population Center")
@@ -58,78 +64,61 @@ ylabel("''Latitude''")
 axis([0 right_bound lower_bound upper_bound]) 
 axis equal
 
+%% Distance to coastline
 
-%% Equation Params
-local_weight = 1;
-coastal_weight = 1;
-pipe_K = 1;
-gpm_per_head = 1;
+%Create a meshgrid of lat/lon coordinates
+LAT = linspace(0,15,100);
+LON = linspace(0,15,100);
+[LAT,LON] = meshgrid(LAT,LON);
 
-%% Distance To Coast
-syms x x0 y0
-dist_coast = sqrt((x-x0).^2 + (coast_line(x)-y0).^2);
-zeros_dist_cost = diff(dist_coast) == 0;
-root_func = matlabFunction(diff(dist_coast));
-min_x = solve(zeros_dist_cost,x, 'ReturnConditions',true);
+%Create distance variables:
+D2Coast = zeros(length(x),1);    %At a given point, this is the distance to every point 
+                           %on the function fx
+minD2Coast = zeros(size(LAT));   %Minimum distance from each x,y coordinate to the line fx
 
-dist_coast_func_helper = @(x,y,x0) sqrt((x0-x).^2 + (coast_line(x0)-y).^2);
-dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func_2(x,y,root_func,x_bounds,coast_line));
-%dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func(x,y,min_x,x_bounds));
-
-
-%% Cost Functions
-x_points = 100;
-y_points = 100;
-x = linspace(0,right_bound,x_points);
-y = linspace(lower_bound,upper_bound,y_points);
-[X,Y] = meshgrid(x,y);
-coast_cost = zeros(y_points, x_points);
-
-for i = 1:x_points
-    for j = 1:y_points
-        coast_cost(j,i) = dist_coast_func(x(i), y(j));
-        fprintf("ij: (%d, %d), xy:(%0.2f, %0.2f), Dist: %f\n", i,j,x(i),y(j),coast_cost(j,i));
+for i = 1:length(LON)
+    for j = 1:length(LAT)
+        for n = 1:length(x)
+            D2Coast(n) = sqrt((LON(i,j)-x(n))^2 + (LAT(i,j)-fx(n))^2);    %Calculate distance from coordinates to point on the line
+        end
+        minD2Coast(i,j) = unique(min(D2Coast));
     end
 end
-%%
-figure
-hold on
-
-surf(X,Y,coast_cost)
-shading interp
-xlim([0 right_bound])
-ylim([lower_bound upper_bound])
-title("Distance To Coast - Analytic (Slow)")
-xlabel("''Longitude''")
-ylabel("''Latitude''")
+%Plot
+figure(2)
+surfc(LON,LAT,minD2Coast)
+xlabel("LON")
+ylabel("LAT")
+zlabel("Distance Squared")
 
 
-%% Discrete Model For Distance to Coast... So Much Easier
-x_points = 500;
-y_points = 500;
-x = linspace(0,right_bound,x_points);
-y = linspace(lower_bound,upper_bound,y_points);
-[X,Y] = meshgrid(x,y);
-x_coast = linspace(x_bounds(1), x_bounds(2), 1000);
-coast_points = coast_line(x_coast);
+%% Distance to cities
 
-coast_cost = zeros(x_points, y_points);
+D2City1 = zeros(size(LAT));
+D2City2 = zeros(size(LAT));
+D2City3 = zeros(size(LAT));
+D2City4 = zeros(size(LAT));
 
-for i = 1:x_points
-    for j = 1:y_points
-        coast_cost(j,i) = min(sqrt((x(i)-x_coast).^2 + (y(j)-coast_points).^2));
+%LAT/LON coordinates of cities
+popCenters = [4.0783    4.0816;
+              1.5899   12.2449;
+             11.4516   10.8455;
+             14.2416    2.1937;];
+
+for i = 1:length(LON)
+    for j = 1 : length(LAT)
+        D2City1(i,j) = sqrt((LON(i,j)-popCenters(1,1))^2 + (LAT(i,j)-popCenters(1,2))^2);
+        D2City2(i,j) = sqrt((LON(i,j)-popCenters(2,1))^2 + (LAT(i,j)-popCenters(2,2))^2);
+        D2City3(i,j) = sqrt((LON(i,j)-popCenters(3,1))^2 + (LAT(i,j)-popCenters(3,2))^2);
+        D2City4(i,j) = sqrt((LON(i,j)-popCenters(4,1))^2 + (LAT(i,j)-popCenters(4,2))^2);
+
     end
 end
+d2pop = D2City1 + D2City2 + D2City3 + D2City4;
 
-%% 
+figure;
+surf(LON,LAT,10.*d2pop);
 
-figure
-hold on
-
-surf(X,Y,coast_cost)
-shading interp
-xlim([0 right_bound])
-ylim([lower_bound upper_bound])
-title("Distance To Coast - Discrete (Fast)")
-xlabel("''Longitude''")
-ylabel("''Latitude''")
+%% Putting them together 
+figure;
+surf(LON,LAT,d2pop+minD2Coast)
