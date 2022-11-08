@@ -1,23 +1,14 @@
 function min_val = min_x_func_2(x,y,handle, bounds, func)
 
-x_points = linspace(bounds(1), bounds(2),100);
 zeros_func = @(x_new) handle(x_new,x,y);
+tmp_bounds = bounds;
 
-%zeros_func_eval = zeros_func(x_points);
+search_space = tmp_bounds(1):0.001:tmp_bounds(2);
 
-my_spline = spline(x_points,zeros_func(x_points));
-min_x = fnzeros(my_spline);
-min_x = min_x(1,:);
-min_x(imag(min_x) ~= 0) = [];
-min_val =[];
-if(length(min_x) >= 1)
-    [~, idx] = min(sqrt((min_x - x).^2 + (func(min_x) - y).^2));
-    min_val = min_x(idx);
-    min_val = max(min_val, bounds(1));
-    min_val = min(min_val, bounds(2));
+zero_search = zeros_func(search_space);
+[~,idx] = find(abs(diff(zero_search)) < 0.1,length(search_space));
+min_v = search_space(idx);
+
+[~, idx] = min(sqrt((min_v - x).^2 + (func(min_v) - y).^2));
+min_val = min_v(idx);
 end
-
-if(isempty(min_val))
-    min_val = bounds(2);
-end
-

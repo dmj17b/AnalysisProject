@@ -9,7 +9,7 @@ alphaStar = coastCoeff.alphaStar;
 
 %The 5th-order polynomial that will define our coast:
 coast_line = @(x) alphaStar(1,:) + alphaStar(2,:).*x + alphaStar(3,:).*x.^2 + alphaStar(4,:).*x.^3 ...
-    + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5 + 0.00001.*x.^6;
+    + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5;
 
 %coast_line = @(x) -x+15
 
@@ -78,12 +78,12 @@ dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func_2(x,y,root_func,x
 
 
 %% Cost Functions
-x_points = 20;
-y_points = 20;
+x_points = 100;
+y_points = 100;
 x = linspace(0,right_bound,x_points);
 y = linspace(lower_bound,upper_bound,y_points);
 [X,Y] = meshgrid(x,y);
-coast_cost = zeros(x_points, y_points);
+coast_cost = zeros(y_points, x_points);
 
 for i = 1:x_points
     for j = 1:y_points
@@ -91,7 +91,7 @@ for i = 1:x_points
         fprintf("ij: (%d, %d), xy:(%0.2f, %0.2f), Dist: %f\n", i,j,x(i),y(j),coast_cost(j,i));
     end
 end
-
+%%
 figure
 hold on
 
@@ -99,7 +99,7 @@ surf(X,Y,coast_cost)
 shading interp
 xlim([0 right_bound])
 ylim([lower_bound upper_bound])
-title("Distance To Coast")
+title("Distance To Coast - Analytic (Slow)")
 xlabel("''Longitude''")
 ylabel("''Latitude''")
 
@@ -121,6 +121,8 @@ for i = 1:x_points
     end
 end
 
+%% 
+
 figure
 hold on
 
@@ -128,6 +130,6 @@ surf(X,Y,coast_cost)
 shading interp
 xlim([0 right_bound])
 ylim([lower_bound upper_bound])
-title("Distance To Coast")
+title("Distance To Coast - Discrete (Fast)")
 xlabel("''Longitude''")
 ylabel("''Latitude''")
