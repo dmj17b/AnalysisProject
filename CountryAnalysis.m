@@ -32,8 +32,6 @@ min_x = solve(zeros_dist_cost,x, 'ReturnConditions',true);
 dist_coast_func_helper = @(x,y,x0) sqrt((x0-x).^2 + (coast_line(x0)-y).^2);
 dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func(x,y,min_x,x_bounds));
 
-%min_x = matlabFunction(min(min_x));
-
 %{
 for i = 1:length(populations)
     tmp_func = @(x,y) pipe_K*gpm_per_head*populations(i)*sqrt(x.^2 + y.^2);
