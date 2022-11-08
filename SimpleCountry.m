@@ -99,6 +99,19 @@ D2City2 = zeros(size(LAT));
 D2City3 = zeros(size(LAT));
 D2City4 = zeros(size(LAT));
 
+%Population of cities
+popCity1 = 100;
+popCity2 = 250;
+popCity3 = 75;
+popCity4 = 275;
+totalPop = popCity1+popCity2+popCity3+popCity4;
+
+%Normalize each cities population by the total population
+normPop1 = popCity1/totalPop;   
+normPop2 = popCity2/totalPop;
+normPop3 = popCity3/totalPop;
+normPop4 = popCity4/totalPop;
+
 %LAT/LON coordinates of cities
 popCenters = [4.0783    4.0816;
               1.5899   12.2449;
@@ -114,7 +127,10 @@ for i = 1:length(LON)
 
     end
 end
-d2pop = D2City1 + D2City2 + D2City3 + D2City4;
+
+%Developing the cost function based on cities:
+d2pop = normPop1.*D2City1 + normPop2.*D2City2 + normPop3.*D2City3 ...
+    + normPop4.*D2City4;
 
 figure;
 surf(LON,LAT,10.*d2pop);
