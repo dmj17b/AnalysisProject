@@ -20,7 +20,7 @@ right_bound = 15;
 options = optimset('Display','off');
 x_bounds = [0 right_bound];
 x_bounds = max(x_bounds, fsolve((@(x) (coast_line(x) - upper_bound)),0,options));
-x_bounds = min(x_bounds, fsolve((@(x) (coast_line(x) - lower_bound)),0, options));
+x_bounds = min(x_bounds, fsolve((@(x) (coast_line(x) - lower_bound)),right_bound, options));
 
 fplot(coast_line, x_bounds,'g');
 hold on
@@ -46,8 +46,10 @@ plot(xv,yv,'g','HandleVisibility','off')
 %% Plot some randomly selected population centers:
 popCenters = [4.0783    4.0816;
               1.5899   12.2449;
-             11.4516   10.8455;];
-populations = [1000, 500, 800];
+              11.4516   10.8455;
+             14.2416    2.1937;];
+
+populations = [1000, 500, 800, 500];
 scatter(popCenters(:,1),popCenters(:,2),populations/10,'b*')
 
 %% Add some titles and labels
@@ -57,7 +59,6 @@ xlabel("''Longitude''")
 ylabel("''Latitude''")
 axis([0 right_bound lower_bound upper_bound]) 
 axis equal
-
 
 %% Equation Params
 local_weight = 1;
@@ -73,17 +74,14 @@ root_func = matlabFunction(diff(dist_coast));
 min_x = solve(zeros_dist_cost,x, 'ReturnConditions',true);
 
 dist_coast_func_helper = @(x,y,x0) sqrt((x0-x).^2 + (coast_line(x0)-y).^2);
-dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func_2(x,y,root_func,x_bounds,coast_line));
-%dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func(x,y,min_x,x_bounds));
-
-
+dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func(x,y,root_func,x_bounds,coast_line));
 %% Cost Functions
-x_points = 40;
+x_points = 100;
 y_points = 100;
-x = linspace(10,right_bound,x_points);
+x = linspace(0,right_bound,x_points);
 y = linspace(lower_bound,upper_bound,y_points);
 [X,Y] = meshgrid(x,y);
-coast_cost = zeros(x_points, y_points);
+coast_cost = zeros(y_points, x_points);
 
 for i = 1:x_points
     for j = 1:y_points
@@ -99,7 +97,7 @@ surf(X,Y,coast_cost)
 shading interp
 xlim([0 right_bound])
 ylim([lower_bound upper_bound])
-title("Distance To Coast")
+title("Distance To Coast - Analytic (Slow)")
 xlabel("''Longitude''")
 ylabel("''Latitude''")
 
@@ -130,6 +128,7 @@ surf(X,Y,coast_cost)
 shading interp
 xlim([0 right_bound])
 ylim([lower_bound upper_bound])
-title("Distance To Coast")
+title("Distance To Coast - Discrete (Fast)")
 xlabel("''Longitude''")
 ylabel("''Latitude''")
+
