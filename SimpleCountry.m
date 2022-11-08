@@ -6,7 +6,7 @@ close all
 
 % Coefficients of polynomial that define the coastline have been
 % predetermined (totally arbitrary, but still predetermined)
-coastCoeff = load("coastPolyCoeffs.mat")
+coastCoeff = load("coastPolyCoeffs.mat");
 alphaStar = coastCoeff.alphaStar;
 
 %Some linearly spaced x values
@@ -106,10 +106,13 @@ end
 d2pop = D2City1 + D2City2 + D2City3 + D2City4;
 
 figure;
-surf(LON,LAT,10.*d2pop);
+surf(LON,LAT,d2pop);
 
 %% Putting them together 
 figure;
 surf(LON,LAT,d2pop+minD2Coast)
     
+%%
+figure(1)
+
 
