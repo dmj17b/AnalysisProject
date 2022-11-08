@@ -89,7 +89,7 @@ for i = 1:x_points
         fprintf("ij: (%d, %d), xy:(%0.2f, %0.2f), Dist: %f\n", i,j,x(i),y(j),coast_cost(j,i));
     end
 end
-%%
+
 figure
 hold on
 
@@ -102,33 +102,4 @@ xlabel("''Longitude''")
 ylabel("''Latitude''")
 
 
-%% Discrete Model For Distance to Coast... So Much Easier
-x_points = 500;
-y_points = 500;
-x = linspace(0,right_bound,x_points);
-y = linspace(lower_bound,upper_bound,y_points);
-[X,Y] = meshgrid(x,y);
-x_coast = linspace(x_bounds(1), x_bounds(2), 1000);
-coast_points = coast_line(x_coast);
-
-coast_cost = zeros(x_points, y_points);
-
-for i = 1:x_points
-    for j = 1:y_points
-        coast_cost(j,i) = min(sqrt((x(i)-x_coast).^2 + (y(j)-coast_points).^2));
-    end
-end
-
-%% 
-
-figure
-hold on
-
-surf(X,Y,coast_cost)
-shading interp
-xlim([0 right_bound])
-ylim([lower_bound upper_bound])
-title("Distance To Coast - Discrete (Fast)")
-xlabel("''Longitude''")
-ylabel("''Latitude''")
-
+%% Distance to 
