@@ -107,11 +107,5 @@ ylabel("''Latitude''")
 D2P = cell(size(popCenters,1),1);
 
 for i = 1:size(popCenters,1)
-    D2P{i} = @(x,y) sqrt((x - popCenters(i,1)).^2 + (y - popCenters(i,2)).^2);
-    figure
-    surf(X,Y,D2P{i}(X,Y))
-    shading interp
-    view(0,90)
+    D2P{i} = @(x,y) sqrt(x)
 end
-
-

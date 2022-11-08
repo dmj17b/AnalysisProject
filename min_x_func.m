@@ -1,4 +1,4 @@
-function min_val = min_x_func_2(x,y,handle, bounds, func)
+function min_val = min_x_func(x,y,handle, bounds, func)
 
 zeros_func = @(x_new) handle(x_new,x,y);
 tmp_bounds = bounds;
