@@ -1,10 +1,14 @@
-function min_val = min_x_func(x,y,sym_func, bounds)
-syms x0 y0
-sols = subs(sym_func, [x0 y0], [x,y]).x;
-sols = double(sols);
-sols(imag(sols) ~= 0) = [];
-%fprintf("X: %0.2f\n", x)
-[~,idx] = min(abs(sols-x));
-min_val = sols(idx);
-min_val = max(min_val, bounds(1));
-min_val = min(min_val, bounds(2));
+function min_val = min_x_func(x,y,handle, bounds, func)
+
+zeros_func = @(x_new) handle(x_new,x,y);
+tmp_bounds = bounds;
+
+search_space = tmp_bounds(1):0.001:tmp_bounds(2);
+
+zero_search = zeros_func(search_space);
+[~,idx] = find(diff(zero_search) < 0.1,length(search_space));
+min_v = search_space(idx);
+
+[~, idx] = min(sqrt((min_v - x).^2 + (func(min_v) - y).^2));
+min_val = min_v(idx);
+end
