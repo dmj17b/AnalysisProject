@@ -1,6 +1,4 @@
-clc
-clear all
-close all
+clc; clear; close all
 
 %% Defining the Coast
 
@@ -16,24 +14,38 @@ x = linspace(0.55,5.9625,100);
 fx = alphaStar(1,:) + alphaStar(2,:).*x + alphaStar(3,:).*x.^2 + alphaStar(4,:).*x.^3 ...
     + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5;
 
-plot(x,fx,'g');
+coast_line = @(x) alphaStar(1,:) + alphaStar(2,:).*x + alphaStar(3,:).*x.^2 + alphaStar(4,:).*x.^3 ...
+    + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5;
+
+%coast_line = @(x) -x+15
+
+upper_bound = 15;
+lower_bound = 0;
+right_bound = 15;
+
+options = optimset('Display','off');
+x_bounds = [0 right_bound];
+x_bounds = max(x_bounds, fsolve((@(x) (coast_line(x) - upper_bound)),0,options));
+x_bounds = min(x_bounds, fsolve((@(x) (coast_line(x) - lower_bound)),0, options));
+
+plot(x, fx,'g');
 hold on
 
-%% Defining the borders of the country (just straight lines)
+%%% Defining the borders of the country (just straight lines)
 
 %Define upper border as straight line:
-x1 = linspace(0.55,15,100);
-y1 = 15.*ones(length(x1));
+x1 = linspace(x_bounds(1), right_bound,2);
+y1 = upper_bound.*ones(length(x1));
 plot(x1,y1,'g','HandleVisibility','off')
 
 %Define lower border as straight line:
-x2 = linspace(5.9,15,100);
-y2 = 0.*ones(length(x2));
+x2 = linspace(x_bounds(2),right_bound ,2);
+y2 = lower_bound.*ones(length(x2));
 plot(x2,y2,'g','HandleVisibility','off')
 
 %Define right side boarder as straight line:
-xv = 15.*ones(length(x));
-yv = linspace(0,15,length(xv));
+xv = right_bound.*ones(2,1);
+yv = linspace(lower_bound, upper_bound,length(xv));
 plot(xv,yv,'g','HandleVisibility','off')
 
 
@@ -49,9 +61,8 @@ legend("Borders","Population Center")
 title("Fictional Country")
 xlabel("''Longitude''")
 ylabel("''Latitude''")
-axis([-5 20 -5 20]) 
+axis([0 right_bound lower_bound upper_bound]) 
 axis equal
-
 
 %% Distance to coastline
 
@@ -88,6 +99,19 @@ D2City2 = zeros(size(LAT));
 D2City3 = zeros(size(LAT));
 D2City4 = zeros(size(LAT));
 
+%Population of cities
+popCity1 = 100;
+popCity2 = 250;
+popCity3 = 75;
+popCity4 = 275;
+totalPop = popCity1+popCity2+popCity3+popCity4;
+
+%Normalize each cities population by the total population
+normPop1 = popCity1/totalPop;   
+normPop2 = popCity2/totalPop;
+normPop3 = popCity3/totalPop;
+normPop4 = popCity4/totalPop;
+
 %LAT/LON coordinates of cities
 popCenters = [4.0783    4.0816;
               1.5899   12.2449;
@@ -103,7 +127,10 @@ for i = 1:length(LON)
 
     end
 end
-d2pop = D2City1 + D2City2 + D2City3 + D2City4;
+
+%Developing the cost function based on cities:
+d2pop = normPop1.*D2City1 + normPop2.*D2City2 + normPop3.*D2City3 ...
+    + normPop4.*D2City4;
 
 figure;
 surf(LON,LAT,d2pop);
@@ -114,5 +141,3 @@ surf(LON,LAT,d2pop+minD2Coast)
     
 %%
 figure(1)
-
-
