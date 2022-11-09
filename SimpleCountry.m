@@ -137,6 +137,7 @@ surf(LON,LAT,d2pop);
 
 %% Putting them together 
 figure;
+costMap = d2pop + minD2Coast;
 surf(LON,LAT,d2pop+minD2Coast)
     
 %%
