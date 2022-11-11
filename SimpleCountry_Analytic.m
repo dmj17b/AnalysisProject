@@ -22,7 +22,7 @@ x_bounds = [0 right_bound];
 x_bounds = max(x_bounds, fsolve((@(x) (coast_line(x) - upper_bound)),0,options));
 x_bounds = min(x_bounds, fsolve((@(x) (coast_line(x) - lower_bound)),right_bound, options));
 
-fplot(coast_line, x_bounds,'g');
+fplot(coast_line, x_bounds,'k');
 hold on
 
 %%% Defining the borders of the country (just straight lines)
@@ -30,17 +30,17 @@ hold on
 %Define upper border as straight line:
 x1 = linspace(x_bounds(1), right_bound,2);
 y1 = upper_bound.*ones(length(x1));
-plot(x1,y1,'g','HandleVisibility','off')
+plot(x1,y1,'k','HandleVisibility','off')
 
 %Define lower border as straight line:
 x2 = linspace(x_bounds(2),right_bound ,2);
 y2 = lower_bound.*ones(length(x2));
-plot(x2,y2,'g','HandleVisibility','off')
+plot(x2,y2,'k','HandleVisibility','off')
 
 %Define right side boarder as straight line:
 xv = right_bound.*ones(2,1);
 yv = linspace(lower_bound, upper_bound,length(xv));
-plot(xv,yv,'g','HandleVisibility','off')
+plot(xv,yv,'k','HandleVisibility','off')
 
 
 %% Plot some randomly selected population centers:
@@ -48,6 +48,7 @@ popCenters = [4.0783    4.0816;
               1.5899   12.2449;
               11.4516   10.8455;
              14.2416    2.1937;];
+popCenters = 8*ones(4,2);
 
 populations = [1000, 500, 800, 500];
 scatter(popCenters(:,1),popCenters(:,2),populations/10,'b*')
@@ -75,20 +76,16 @@ min_x = solve(zeros_dist_cost,x, 'ReturnConditions',true);
 
 dist_coast_func_helper = @(x,y,x0) sqrt((x0-x).^2 + (coast_line(x0)-y).^2);
 dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func(x,y,root_func,x_bounds,coast_line));
-%% Cost Functions
+%% Distance To Coast
+
 x_points = 100;
 y_points = 100;
 x = linspace(0,right_bound,x_points);
 y = linspace(lower_bound,upper_bound,y_points);
 [X,Y] = meshgrid(x,y);
-coast_cost = zeros(y_points, x_points);
 
-for i = 1:x_points
-    for j = 1:y_points
-        coast_cost(j,i) = dist_coast_func(x(i), y(j));
-        fprintf("ij: (%d, %d), xy:(%0.2f, %0.2f), Dist: %f\n", i,j,x(i),y(j),coast_cost(j,i));
-    end
-end
+%{
+coast_cost = dist_coast_func(X,Y);
 
 figure
 hold on
@@ -100,18 +97,32 @@ ylim([lower_bound upper_bound])
 title("Distance To Coast - Analytic (Slow)")
 xlabel("''Longitude''")
 ylabel("''Latitude''")
-
+%}
 
 %% Distance to Population Centers
 
 D2P = cell(size(popCenters,1),1);
 
 for i = 1:size(popCenters,1)
-    D2P{i} = @(x,y) sqrt((x - popCenters(i,1)).^2 + (y - popCenters(i,2)).^2);
-    figure
-    surf(X,Y,D2P{i}(X,Y))
-    shading interp
-    view(0,90)
+    D2P{i} = @(x,y) populations(i)*sqrt((x - popCenters(i,1)).^2 + (y - popCenters(i,2)).^2);
+    %figure
+    %surf(X,Y,D2P{i}(X,Y); 
+    %shading interp
+    %view(0,90)
 end
 
+D2P_Full = @(x,y) 0;
+for i = 1:size(popCenters,1)
+    D2P_Full = (@(x,y) D2P_Full(x,y) +  D2P{i}(x,y));
+end
 
+D2P_Full = (@(x,y) D2P_Full(x,y) + sum(populations)*dist_coast_func(x, y));
+%figure
+Z = D2P_Full(X,Y);
+minMatrix = min(Z(:));
+[row,col] = find(Z==minMatrix);
+
+scatter(x(col),y(row),'gd','DisplayName', 'Plant Location')
+%surf(X,Y,Z)
+%shading interp
+%view(0,90)

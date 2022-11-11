@@ -108,16 +108,21 @@ xlabel("''Longitude''")
 ylabel("''Latitude''")
 
 
-%% Distance to Population Centers
+%% Distance to Population Centers (weighted)
 
 D2P = cell(size(popCenters,1),1);
 
 for i = 1:size(popCenters,1)
-    D2P{i} = @(x,y) sqrt((x - popCenters(i,1)).^2 + (y - popCenters(i,2)).^2);
+    D2P{i} = @(x,y) populations(i)*sqrt((x - popCenters(i,1)).^2 + (y - popCenters(i,2)).^2);
     figure
     surf(X,Y,D2P{i}(X,Y))
     shading interp
     view(0,90)
+end
+
+D2P_Full = @(x,y) 0;
+for i = 1:size(popCenters,1)
+    D2P_Full = D2P_Full + (@(x,y) D2P(x,y));
 end
 
 
