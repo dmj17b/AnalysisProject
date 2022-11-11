@@ -7,6 +7,7 @@ close all
 %that looked like they would make a good line, then I used regression to
 %fit a random polynomial to those data points
 
+
 x = 0:0.1:20;
 
 figure();

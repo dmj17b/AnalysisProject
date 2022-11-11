@@ -26,7 +26,7 @@ z_vec = costMap(:);
 
 
 %% From the bottom of this paper ... https://www.sci.utah.edu/~balling/FEtools/doc_files/LeastSquaresFitting.pdf
-order = 21;
+order = 15;
 dim = (order+1)*(order+2)/2;
 Phi = zeros(dim);
 
@@ -64,6 +64,8 @@ Z = reshape(Z, size(costMap));
 
 figure
 surf(X,Y,Z)
+
+save Analytic_CostMap f -mat
 
 
 

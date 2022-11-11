@@ -145,9 +145,12 @@ d2pop = normPop1.*D2City1 + normPop2.*D2City2 + normPop3.*D2City3 ...
     + normPop4.*D2City4;
 
 figure;
-surf(LON,LAT,10.*d2pop);
+surf(LON,LAT,d2pop);
 
 %% Putting them together 
 figure;
 costMap = d2pop + minD2Coast;
 surf(LON,LAT,d2pop+minD2Coast)
+    
+%%
+figure(1)
