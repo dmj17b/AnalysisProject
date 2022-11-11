@@ -68,16 +68,21 @@ gpm_per_head = 1;
 
 %% Distance To Coast
 syms x x0 y0
-dist_coast = sqrt((x-x0).^2 + (coast_line(x)-y0).^2);
-zeros_dist_cost = diff(dist_coast) == 0;
-root_func = matlabFunction(diff(dist_coast));
-min_x = solve(zeros_dist_cost,x, 'ReturnConditions',true);
+coast_line_sym = alphaStar(1,:) + alphaStar(2,:).*x + alphaStar(3,:).*x.^2 + alphaStar(4,:).*x.^3 ...
+    + alphaStar(5,:).*x.^4 + alphaStar(6,:).*x.^5;
+dist_coast = sqrt((x-x0).^2 + (coast_line_sym-y0).^2);
+dd_coast = diff(dist_coast);
+dd2_coast = diff(dd_coast) > 0;
+
+d_coast_func = matlabFunction(dist_coast);
+dd_coast_func = matlabFunction(dd_coast == 0);
+dd2_coast_func = matlabFunction(dd2_coast);
 
 dist_coast_func_helper = @(x,y,x0) sqrt((x0-x).^2 + (coast_line(x0)-y).^2);
-dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func(x,y,root_func,x_bounds,coast_line));
+dist_coast_func = @(x,y) dist_coast_func_helper(x,y,min_x_func2(x,y,dd_coast_func, dd2_coast_func,d_coast_func));
 %% Cost Functions
-x_points = 100;
-y_points = 100;
+x_points = 20;
+y_points = 20;
 x = linspace(0,right_bound,x_points);
 y = linspace(lower_bound,upper_bound,y_points);
 [X,Y] = meshgrid(x,y);
@@ -90,6 +95,7 @@ for i = 1:x_points
     end
 end
 
+%%
 figure
 hold on
 
@@ -107,5 +113,11 @@ ylabel("''Latitude''")
 D2P = cell(size(popCenters,1),1);
 
 for i = 1:size(popCenters,1)
-    D2P{i} = @(x,y) sqrt(x)
+    D2P{i} = @(x,y) sqrt((x - popCenters(i,1)).^2 + (y - popCenters(i,2)).^2);
+    figure
+    surf(X,Y,D2P{i}(X,Y))
+    shading interp
+    view(0,90)
 end
+
+

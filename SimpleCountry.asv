@@ -91,14 +91,15 @@ xlabel("LON")
 ylabel("LAT")
 zlabel("Distance Squared")
 
-[string_poly, coeffs] = CreatePoly(6);
+[string_poly, coeffs] = CreatePoly(4);
 ft=fittype(string_poly, ...
            'independent', {'x','y'}, ...
            'dependent',{'z'}, ...
            'coefficients',coeffs');
 
-D2Coast_fit = fit([LON(:), LAT(:)], minD2Coast(:), ft,'StartPoint', zeros(size(coeffs)), ...
-    'MaxFunEvals', 10000, 'MaxIter', 10000);
+D2Coast_fit = fit([LON(:), LAT(:)], minD2Coast(:), ft,'StartPoint', ones(size(coeffs)), ...
+    'MaxFunEvals', 1000, 'MaxIter', 10000,           TolFun: 1.0000e-06
+             TolX: 1.0000e-06);
 
 figure
 plot(D2Coast_fit)

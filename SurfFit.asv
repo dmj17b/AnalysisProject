@@ -1,7 +1,7 @@
 clc
 clear
 close all
-echo on
+%echo on
 
 cost = load("costMap.mat");
 costMap = cost.costMap;
@@ -26,7 +26,7 @@ z_vec = costMap(:);
 
 
 %% From the bottom of this paper ... https://www.sci.utah.edu/~balling/FEtools/doc_files/LeastSquaresFitting.pdf
-order = 21;
+order = 2;
 dim = (order+1)*(order+2)/2;
 Phi = zeros(dim);
 
@@ -38,7 +38,9 @@ idx = 1;
 for i = 0:order
     for j = 0:order
         if(i+(order-j) <= order)
-            Q(idx) = (x.^i).*(y.^(order-j));
+            (x.^i).*(y.^(order-j))
+            (i*order) + (order-j) + 1
+            Q((i*order) + (order-j) + 1) = (x.^i).*(y.^(order-j));
             idx = idx + 1;
         end
     end
