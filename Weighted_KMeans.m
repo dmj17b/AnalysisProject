@@ -11,14 +11,15 @@ C(:,2) = rand(N,1)*(diff(range_y)) + range_y(1);
 points = [x y zeros(length(x),1)]; %x,y,idx
 
 for i = 1:iters
+    rand_order = randperm(size(points,1)); %This will help cluster better
     C_pops = zeros(N,1);
     for j = 1:size(points,1)
-        [~, idx] = mink(vecnorm(points(j,1:2) - C,2,2),N);
+        [~, idx] = mink(vecnorm(points(rand_order(j),1:2) - C,2,2),N);
         
         for it = 1:N
-            if(C_pops(idx(it))+pop(j) < max_pop)
-                points(j,3) = idx(it);
-                C_pops(idx(it)) = C_pops(idx(it)) + pop(j);
+            if(C_pops(idx(it))+pop(rand_order(j)) < max_pop)
+                points(rand_order(j),3) = idx(it);
+                C_pops(idx(it)) = C_pops(idx(it)) + pop(rand_order(j));
                 break;
             end
         end

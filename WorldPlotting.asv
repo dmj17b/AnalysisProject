@@ -52,24 +52,9 @@ long_filter = and(Coasts.coastlon > long_limits(1), Coasts.coastlon < long_limit
 lat_filter = and(Coasts.coastlat > lat_limits(1), Coasts.coastlat < lat_limits(2));
 Coasts.coastlon(~and(long_filter, lat_filter),:) = [];
 Coasts.coastlat(~and(long_filter, lat_filter),:) = [];
-
-%Manual Filters
-
-long_filter = Coasts.coastlon > 10;
-lat_filter = Coasts.coastlat > 10;
-Coasts.coastlon(and(long_filter, lat_filter),:) = [];
-Coasts.coastlat(and(long_filter, lat_filter),:) = [];
-
-long_filter = and(Coasts.coastlon > 8, Coasts.coastlon < 9);
-lat_filter = and(Coasts.coastlat > 2, Coasts.coastlat < 4.1);
-Coasts.coastlon(and(long_filter, lat_filter),:) = [];
-Coasts.coastlat(and(long_filter, lat_filter),:) = [];
-
-
 figure
 geobasemap colorterrain
 hold on
-geoscatter(cities(:,1), cities(:,2),size_map,color_map,'Marker','.')
-geoscatter(Coasts.coastlat, Coasts.coastlon,150,'k','Marker','.' );
+geoscatter(cities(:,1), cities(:,2),100,idx,'Marker','.')
+geoscatter(Coasts.coastlat, Coasts.coastlon,'k','LineWidth',2);
 geolimits(lat_limits,long_limits)
-
