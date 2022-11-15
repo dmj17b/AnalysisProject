@@ -80,11 +80,7 @@ for i = 1:size(C,1)
 end
 
 for i = 1:size(C,1)
-    figure
-    geobasemap colorterrain
-    hold on
-    geoscatter(closest_coastal(i,2), closest_coastal(i,1),150,'m','Marker','.' );
-    geoscatter(C(i,1), C(i,2),max_marker*4,'.m')
+    
     direction = C(i,2:-1:1) - closest_coastal(i,:);
 
     %D = 0 Left, 1 Right, 2 Up, 3 Down
@@ -102,6 +98,6 @@ for i = 1:size(C,1)
             D = 2;
         end
     end
-    PlanCluster(cities(group_idx==i,:), D, coast_sort);
+    PlanCluster(cities(group_idx==i,:), D, coast_sort,closest_coastal(i,:));
 end
 
