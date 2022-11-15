@@ -37,9 +37,15 @@ geoscatter(C(:,1), C(:,2),max_marker*4,'.m')
 colormap jet
 geobasemap colorterrain
 colorbar
-
-group_idx = idx;
-
+%{
+for i = 1:max(idx)
+    figure
+    geobasemap colorterrain
+    hold on
+    geoscatter(cities(idx==i,1), cities(idx==i,2),100,'.k')
+    geolimits([min(cities(idx==i,1)) max(cities(idx==i,1))],[min(cities(idx==i,2)) max(cities(idx==i,2))])
+end
+%}
 %% Coasts
 Coasts = load('coastlines');
 long_filter = and(Coasts.coastlon > long_limits(1), Coasts.coastlon < long_limits(2));
@@ -59,10 +65,12 @@ lat_filter = and(Coasts.coastlat > 2, Coasts.coastlat < 4.1);
 Coasts.coastlon(and(long_filter, lat_filter),:) = [];
 Coasts.coastlat(and(long_filter, lat_filter),:) = [];
 
+
 figure
 geobasemap colorterrain
 hold on
 geoscatter(cities(:,1), cities(:,2),size_map,color_map,'Marker','.')
+geoscatter(Coasts.coastlat, Coasts.coastlon,150,'k','Marker','.' );
 geolimits(lat_limits,long_limits)
 
 [Coasts.coastlon, I] = sort(Coasts.coastlon);
@@ -80,28 +88,14 @@ for i = 1:size(C,1)
 end
 
 for i = 1:size(C,1)
-    figure
-    geobasemap colorterrain
-    hold on
     geoscatter(closest_coastal(i,2), closest_coastal(i,1),150,'m','Marker','.' );
     geoscatter(C(i,1), C(i,2),max_marker*4,'.m')
-    direction = C(i,2:-1:1) - closest_coastal(i,:);
-
-    %D = 0 Left, 1 Right, 2 Up, 3 Down
-    if(abs(direction(1)) > abs(direction(2)))
-        %Left or Right
-        if(sign(direction(1)) > 0)
-            D = 0;
-        else
-            D = 1;
-        end
-    else
-        if(sign(direction(2)) > 0)
-            D = 3;
-        else
-            D = 2;
-        end
-    end
-    PlanCluster(cities(group_idx==i,:), D, coast_sort);
+    direction = ckis
+    keyboard
 end
+%{
+coeffs = polyfit(coast_sort(:,1), coast_sort(:,2),10);
+lat_est = polyval(coeffs, coast_sort(:,1));
+geoplot(lat_est,coast_sort(:,1), 'LineWidth',2, 'color', 'red')
+%}
 
