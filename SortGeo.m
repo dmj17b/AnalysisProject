@@ -4,7 +4,7 @@ sortedGeo = zeros(length(lat),2);
 sortedGeo(1,:) = [long(idx) lat(idx)];
 
 
-for i = 2:length(lat)
+for i = 2:length(lat)+1
     [~, idx] = min(vecnorm(sortedGeo(i-1,:) - [long lat],2,2));
     sortedGeo(i,:) = [long(idx) lat(idx)];
     long(idx) = [];

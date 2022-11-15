@@ -27,13 +27,13 @@ colorbar
 
 %% K-Means Map Weighted On Population
 
-[idx,C] = Weighted_KMeans(cities(:,1),cities(:,2),cities(:,3),16000000, 1000, 10);
+[idx,C] = Weighted_KMeans(cities(:,1),cities(:,2),cities(:,3),16000000, 1000);
 
 cla
 hold on
-geoscatter(C(:,1), C(:,2),max_marker*4,'.m')
 geolimits(lat_limits,long_limits)
 geoscatter(cities(:,1), cities(:,2),100,idx,'Marker','.')
+geoscatter(C(:,1), C(:,2),max_marker*4,'.m')
 colormap jet
 geobasemap colorterrain
 colorbar
@@ -79,8 +79,6 @@ Coasts.coastlat = Coasts.coastlat(I);
 coast_sort = SortGeo(Coasts.coastlon, Coasts.coastlat);
 geoplot(coast_sort(:,2), coast_sort(:,1),'-k','Linewidth', 2);
 
-%{
-coeffs = polyfit(Coasts.coastlon, Coasts.coastlat);
-lat_est = polyval(coeffs, Coasts.coastlon);
-geoplot(lat_est,Coasts.coastlon, 'LineWidth',2, 'color', 'red')
-%}
+coeffs = polyfit(coast_sort(:,1), coast_sort(:,2),10);
+lat_est = polyval(coeffs, coast_sort(:,1));
+geoplot(lat_est,coast_sort(:,1), 'LineWidth',2, 'color', 'red')

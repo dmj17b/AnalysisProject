@@ -1,4 +1,4 @@
-function [idx,C] = Weighted_KMeans(x,y,pop,max_pop, iters, max_R)
+function [idx,C] = Weighted_KMeans(x,y,pop,max_pop, iters)
 
 N = ceil(sum(pop)/max_pop);
 
@@ -10,19 +10,23 @@ C(:,2) = rand(N,1)*(diff(range_y)) + range_y(1);
 
 points = [x y zeros(length(x),1)]; %x,y,idx
 
+
+old_C = C;
+
 for i = 1:iters
-    rand_order = randperm(size(points,1)); %This will help cluster better
-    %[~, rand_order] = sort(points(:,3));
+    %rand_order = randperm(size(points,1)); 
+    [~, rand_order] = sort(pop); %This will help cluster populations size better
     C_pops = zeros(N,1);
+    points(:,3) = 0;
     for j = 1:size(points,1)
         dists = vecnorm(points(rand_order(j),1:2) - C,2,2);
         [~, idx] = mink(dists,N);
         for it = 1:N
-            %if(C_pops(idx(it))+pop(rand_order(j)) < max_pop)
+            if(C_pops(idx(it))+pop(rand_order(j)) < max_pop)
                 points(rand_order(j),3) = idx(it);
                 C_pops(idx(it)) = C_pops(idx(it)) + pop(rand_order(j));
                 break;
-            %end
+            end
         end
         
     end
@@ -44,6 +48,13 @@ for i = 1:iters
         end
     end
     %cla
+
+    if(all(old_C == C))
+        break
+    else
+        old_C = C;
+    end
+
 end
 
 idx = points(:,3);
