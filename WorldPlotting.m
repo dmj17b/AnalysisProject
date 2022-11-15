@@ -9,7 +9,7 @@ cities(cities(:,3) == 0,:) = [];
 long_filter = and(cities(:,2) > long_limits(1), cities(:,2) < long_limits(2));
 lat_filter = and(cities(:,1) > lat_limits(1), cities(:,1) < lat_limits(2));
 cities(~and(long_filter, lat_filter),:) = [];
-rng(1999) %Random Seed to keep our results the same
+rng(20004) %Random Seed to keep our results the same
 %% Create Map
 max_marker = 125;
 min_marker = 50;
@@ -27,7 +27,7 @@ colorbar
 
 %% K-Means Map Weighted On Population
 
-[idx,C] = Weighted_KMeans(cities(:,1),cities(:,2),cities(:,3),16000000, 1000);
+[idx,C] = Weighted_KMeans(cities(:,1),cities(:,2),cities(:,3),16000000, 1000, 10);
 
 cla
 hold on
@@ -76,8 +76,11 @@ geolimits(lat_limits,long_limits)
 [Coasts.coastlon, I] = sort(Coasts.coastlon);
 Coasts.coastlat = Coasts.coastlat(I);
 
-geoplot(Coasts.coastlat, Coasts.coastlon,'-k','Linewidth', 2);
+coast_sort = SortGeo(Coasts.coastlon, Coasts.coastlat);
+geoplot(coast_sort(:,2), coast_sort(:,1),'-k','Linewidth', 2);
 
+%{
 coeffs = polyfit(Coasts.coastlon, Coasts.coastlat);
 lat_est = polyval(coeffs, Coasts.coastlon);
 geoplot(lat_est,Coasts.coastlon, 'LineWidth',2, 'color', 'red')
+%}
