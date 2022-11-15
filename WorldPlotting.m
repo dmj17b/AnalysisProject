@@ -37,7 +37,7 @@ geoscatter(cities(:,1), cities(:,2),100,idx,'Marker','.')
 colormap jet
 geobasemap colorterrain
 colorbar
-
+%{
 for i = 1:max(idx)
     figure
     geobasemap colorterrain
@@ -45,7 +45,7 @@ for i = 1:max(idx)
     geoscatter(cities(idx==i,1), cities(idx==i,2),100,'.k')
     geolimits([min(cities(idx==i,1)) max(cities(idx==i,1))],[min(cities(idx==i,2)) max(cities(idx==i,2))])
 end
-
+%}
 %% Coasts
 Coasts = load('coastlines');
 long_filter = and(Coasts.coastlon > long_limits(1), Coasts.coastlon < long_limits(2));
@@ -73,3 +73,11 @@ geoscatter(cities(:,1), cities(:,2),size_map,color_map,'Marker','.')
 geoscatter(Coasts.coastlat, Coasts.coastlon,150,'k','Marker','.' );
 geolimits(lat_limits,long_limits)
 
+[Coasts.coastlon, I] = sort(Coasts.coastlon);
+Coasts.coastlat = Coasts.coastlat(I);
+
+geoplot(Coasts.coastlat, Coasts.coastlon,'-k','Linewidth', 2);
+
+coeffs = polyfit(Coasts.coastlon, Coasts.coastlat);
+lat_est = polyval(coeffs, Coasts.coastlon);
+geoplot(lat_est,Coasts.coastlon, 'LineWidth',2, 'color', 'red')
