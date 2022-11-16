@@ -89,7 +89,8 @@ for i = 1:size(C,1)
     geoscatter(cities(group_idx==i,1), cities(group_idx==i,2),100,'.k')
     geolimits([min(cities(:,1)) max(cities(:,1))],[min(cities(:,2)) max(cities(:,2))])
 
-    sol = PlanCluster(cities(group_idx==i,:), coast_sort,closest_coastal(i,:));
+    %sol = PlanCluster(cities(group_idx==i,:), coast_sort,closest_coastal(i,:));
+    sol = PlanCluster_Discrete(cities(group_idx==i,:), coast_sort,closest_coastal(i,:));
     fprintf("Optimal Plant Location: (%0.2f, %0.2f)\n",sol(1),sol(2))
     geoscatter(sol(1), sol(2),100,'dg','filled')
     drawnow
