@@ -1,4 +1,4 @@
-clc; close all
+clc; clear; close all
 
 %% Load Data
 long_limits = [-20 20];
