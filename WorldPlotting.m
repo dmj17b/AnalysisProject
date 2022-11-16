@@ -81,23 +81,17 @@ end
 
 for i = 1:size(C,1)
     
-    direction = C(i,2:-1:1) - closest_coastal(i,:);
+    figure
+    geobasemap colorterrain
+    hold on
+    %geoscatter(closest_coastal(i,2), closest_coastal(i,1),150,'m','Marker','.' );
+    %geoscatter(C(i,1), C(i,2),max_marker*4,'.m')
+    geoscatter(cities(group_idx==i,1), cities(group_idx==i,2),100,'.k')
+    geolimits([min(cities(:,1)) max(cities(:,1))],[min(cities(:,2)) max(cities(:,2))])
 
-    %D = 0 Left, 1 Right, 2 Up, 3 Down
-    if(abs(direction(1)) > abs(direction(2)))
-        %Left or Right
-        if(sign(direction(1)) > 0)
-            D = 0;
-        else
-            D = 1;
-        end
-    else
-        if(sign(direction(2)) > 0)
-            D = 3;
-        else
-            D = 2;
-        end
-    end
-    PlanCluster(cities(group_idx==i,:), D, coast_sort,closest_coastal(i,:));
+    sol = PlanCluster(cities(group_idx==i,:), coast_sort,closest_coastal(i,:));
+    fprintf("Optimal Plant Location: (%0.2f, %0.2f)\n",sol(1),sol(2))
+    geoscatter(sol(1), sol(2),100,'dg','filled')
+    drawnow
 end
 
