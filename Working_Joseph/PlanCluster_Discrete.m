@@ -16,7 +16,9 @@ coeffs = polyfit(coast_points(:,1), coast_points(:,2),1);
 rot = -atan2(coeffs(1),1);
 mean_lon = mean(coast_points(:,1));
 mean_lat = mean(coast_points(:,2));
+%geoplot(coast_points(:,2), coast_points(:,1),'-k','Linewidth', 2);
 rot_coast = ([cos(rot) -sin(rot); sin(rot) cos(rot)]*(coast_points' - [mean_lon;mean_lat]))' + [mean_lon mean_lat];
+
 coeffs = polyfit(rot_coast(:,1), rot_coast(:,2), func_order);
 lat_est = polyval(coeffs, rot_coast(:,1));
 fitted_coast = ([cos(-rot) -sin(-rot); sin(-rot) cos(-rot)]*([rot_coast(:,1), lat_est]' - [mean_lon; mean_lat]))' + [mean_lon mean_lat];

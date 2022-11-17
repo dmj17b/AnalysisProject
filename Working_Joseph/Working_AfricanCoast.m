@@ -20,7 +20,7 @@ size_map = max(max_marker*color_map/max(color_map),min_marker);
 
 
 %% Pretty Population Map
-geoscatter(cities(:,1), cities(:,2),size_map,color_map,'Marker','.')
+geoscatter(cities(:,1), cities(:,2),size_map,min(cities(:,3),5*10^6),'Marker','.')
 colormap jet
 geobasemap colorterrain
 colorbar
@@ -36,8 +36,9 @@ geoscatter(cities(:,1), cities(:,2),100,idx,'Marker','.')
 geoscatter(C(:,1), C(:,2),max_marker*4,'.m')
 colormap jet
 geobasemap colorterrain
-colorbar
-
+title("Clustered Populations")
+a = colorbar;
+title(a,"Cluster Number")
 group_idx = idx;
 
 %% Coasts
@@ -84,7 +85,7 @@ for i = 1:size(C,1)
     figure
     geobasemap colorterrain
     hold on
-    %geoscatter(closest_coastal(i,2), closest_coastal(i,1),150,'m','Marker','.' );
+    geoscatter(closest_coastal(i,2), closest_coastal(i,1),150,'m','Marker','.' );
     %geoscatter(C(i,1), C(i,2),max_marker*4,'.m')
     geoscatter(cities(group_idx==i,1), cities(group_idx==i,2),100,'.k')
     geolimits([min(cities(:,1)) max(cities(:,1))],[min(cities(:,2)) max(cities(:,2))])
